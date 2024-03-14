@@ -6,8 +6,10 @@ version = 3
 name = "abi"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "prost",
  "prost-types",
+ "sqlx",
  "tonic",
  "tonic-build",
 ]
@@ -258,7 +260,10 @@ checksum = "8eaf5903dcbc0a39312feb77df2ff4c76387d591b9fc7b04a238dcf8bb62639a"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
+ "js-sys",
  "num-traits",
+ "serde",
+ "wasm-bindgen",
  "windows-targets 0.52.4",
 ]
 
@@ -1257,7 +1262,11 @@ checksum = "c08c74e62047bb2de4ff487b251e4a92e24f48745648451635cec7d591162d9f"
 name = "reservation"
 version = "0.1.0"
 dependencies = [
+ "abi",
+ "async-trait",
+ "chrono",
  "sqlx",
+ "thiserror",
 ]
 
 [[package]]
