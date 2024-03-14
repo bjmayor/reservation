@@ -2,6 +2,8 @@ syntax = "proto3";
 package reservation;
 
 import "google/protobuf/timestamp.proto";
+
+// Reservation Status for a resource
 enum ReservationStatus {
   RESERVATION_STATUS_UNKNOWN = 0;
   RESERVATION_STATUS_PENDING = 1;
@@ -9,6 +11,7 @@ enum ReservationStatus {
   RESERVATION_STATUS_BLOCKED = 3;
 }
 
+// when reservation is created, updated or deleted, record the update type
 enum ReservationUpdateType {
   RESERVATION_UPDATE_TYPE_UNKNOWN = 0;
   RESERVATION_UPDATE_TYPE_CREATE = 1;
@@ -16,13 +19,19 @@ enum ReservationUpdateType {
   RESERVATION_UPDATE_TYPE_DELETE = 3;
 }
 
+// Core reservation object. Contains all the information about a reservation
+// if listenResponse op is DELETE, only id will be populated
 message Reservation {
+  // unique id for a reservation, if put into ReservationRequest, id should be empty
   string id = 1;
+  // user id for the reservation
   string user_id = 2;
+  // reservation status , used for different purpose
   ReservationStatus status = 3;
 
-  // resource reservation window
+  // resource id for the reservation
   string resource_id = 4;
+  // start and end time for the reservation
   google.protobuf.Timestamp start = 5;
   google.protobuf.Timestamp end = 6;
 
@@ -30,22 +39,26 @@ message Reservation {
   string note = 7;
 }
 
+// make a reservation request
 message ReserveRequest {
   Reservation reservation = 1;
 }
-
+// Created a reservation will be returned in ReserveResponse
 message ReserveResponse {
   Reservation reservation = 1;
 }
 
+// only note is allowed to be updated
 message UpdateRequest {
   string note = 2;
 }
 
+// updated reservation will be returned in UpdateResponse
 message UpdateResponse {
   Reservation reservation = 1;
 }
 
+// To change a reservation status from PENDING to CONFIRMED , send a confirm request
 message ConfirmRequest {
   string id = 1;
 }
@@ -54,6 +67,7 @@ message ConfirmResponse {
   Reservation reservation = 1;
 }
 
+// cancel a reservation
 message CancelRequest {
   string id = 1;
 }
@@ -61,11 +75,12 @@ message CancelRequest {
 message CancelResponse {
   Reservation reservation = 1;
 }
-
+// To get a reservation by id
 message GetRequest {
   string id = 1;
 }
 
+// return a reservation
 message GetResponse {
   Reservation reservation = 1;
 }
