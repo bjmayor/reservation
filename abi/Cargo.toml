@@ -9,7 +9,9 @@ edition = "2021"
 chrono = { version = "0.4.35", features = ["serde"] }
 prost = "0.12.3"
 prost-types = "0.12.3"
-sqlx = { version = "0.7.4", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid"] }
+regex = "1.10.3"
+sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid"] }
+thiserror = "1.0.58"
 tonic = { version = "0.11.0", features = ["gzip"] }
 
 [build-dependencies]

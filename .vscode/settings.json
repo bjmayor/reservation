@@ -1,0 +1,6 @@
+{
+	"rust-analyzer.linkedProjects": [
+		"./abi/Cargo.toml"
+	],
+	"rust-analyzer.showUnlinkedFileNotification": false
+}

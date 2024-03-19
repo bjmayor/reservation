@@ -1,9 +1,8 @@
+mod error;
 mod pb;
+mod types;
+mod utils;
 
-use chrono::{DateTime, Utc};
+pub use error::*;
 pub use pb::*;
-use prost_types::Timestamp;
-
-pub fn convert_to_utc_time(ts: Timestamp) -> DateTime<Utc> {
-    DateTime::from_timestamp(ts.seconds, ts.nanos.try_into().unwrap()).unwrap()
-}
+pub use utils::*;
