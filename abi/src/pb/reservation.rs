@@ -92,20 +92,38 @@ pub struct GetResponse {
     #[prost(message, optional, tag = "1")]
     pub reservation: ::core::option::Option<Reservation>,
 }
+#[derive(derive_builder::Builder)]
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ReservationQuery {
     #[prost(string, tag = "1")]
+    #[builder(setter(into), default)]
     pub resource_id: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
+    #[builder(setter(into), default)]
     pub user_id: ::prost::alloc::string::String,
     /// use status to filter result. If UNKNOWN, return all reservations
     #[prost(enumeration = "ReservationStatus", tag = "3")]
+    #[builder(setter(into), default)]
     pub status: i32,
     #[prost(message, optional, tag = "4")]
+    #[builder(setter(into, strip_option))]
     pub start: ::core::option::Option<::prost_types::Timestamp>,
     #[prost(message, optional, tag = "5")]
+    #[builder(setter(into, strip_option))]
     pub end: ::core::option::Option<::prost_types::Timestamp>,
+    /// current page number
+    #[prost(int32, tag = "6")]
+    #[builder(setter(into), default)]
+    pub page: i32,
+    /// page size
+    #[prost(int32, tag = "7")]
+    #[builder(setter(into), default)]
+    pub page_size: i32,
+    /// sort direction
+    #[prost(bool, tag = "8")]
+    #[builder(setter(into), default)]
+    pub desc: bool,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
