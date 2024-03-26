@@ -106,6 +106,52 @@ impl Rsvp for ReservationManager {
 
         Ok(rsvps)
     }
+
+    async fn filter(
+        &self,
+        query: abi::ReservationFilter,
+    ) -> Result<(abi::FilterPager, Vec<abi::Reservation>), abi::Error> {
+        // filter reservations by user_id and resource_id, status, and order by id
+        let user_id = str_to_option(&query.user_id);
+        let resource_id = str_to_option(&query.resource_id);
+        let status = abi::ReservationStatus::try_from(query.status)
+            .unwrap_or(abi::ReservationStatus::Pending);
+        let mut rsvps: Vec<abi::Reservation> = sqlx::query_as(
+            "SELECT * FROM rsvp.filter($1, $2, $3::rsvp.reservation_status, $4, $5, $6)",
+        )
+        .bind(user_id)
+        .bind(resource_id)
+        .bind(status.to_string())
+        .bind(query.cursor)
+        .bind(query.desc)
+        .bind(query.page_size)
+        .fetch_all(&self.pool)
+        .await?;
+        // if the first id is current cursor, then we have prev, start from 1
+        // if len -start > page_size, then we have next, we end at len-1
+        let start = if !rsvps.is_empty() && rsvps[0].id == query.cursor {
+            1
+        } else {
+            0
+        };
+        let has_next = rsvps.len() - start > query.page_size as usize;
+        let end = if has_next {
+            rsvps.len() - 1
+        } else {
+            rsvps.len()
+        };
+        let result = rsvps.drain(start..end).collect();
+
+        let prev = if start == 1 { rsvps[0].id } else { -1 };
+        let next = if has_next { rsvps[end - 1].id } else { -1 };
+        let pager = abi::FilterPager {
+            next,
+            prev,
+            // TODO: get total count from the database
+            total: 0,
+        };
+        Ok((pager, result))
+    }
 }
 
 impl ReservationManager {
@@ -255,6 +301,23 @@ mod tests {
         assert_eq!(rsvps[0], rsvp);
     }
 
+    #[sqlx_database_tester::test(pool(variable = "migrated_pool", migrations = "../migrations"))]
+    async fn filter_reservations_should_work() {
+        let (rsvp, manager) = make_alice_reservation(migrated_pool.clone()).await;
+        let filter = abi::ReservationFilter {
+            user_id: "aliceid".to_string(),
+            resource_id: "ixia-test-1".to_string(),
+            status: abi::ReservationStatus::Pending as i32,
+            cursor: 0,
+            desc: false,
+            page_size: 10,
+        };
+        let (pager, rsvps) = manager.filter(filter).await.unwrap();
+        assert_eq!(pager.next, -1);
+        assert_eq!(pager.prev, -1);
+        assert_eq!(rsvps.len(), 1);
+        assert_eq!(rsvps[0], rsvp);
+    }
     async fn make_tyr_reservation(pool: PgPool) -> (Reservation, ReservationManager) {
         make_reservation(
             pool,
