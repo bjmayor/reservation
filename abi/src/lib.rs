@@ -1,3 +1,4 @@
+mod config;
 mod error;
 mod pb;
 mod types;
@@ -6,6 +7,7 @@ mod utils;
 pub use error::{Error, ReservationConflict, ReservationConflictInfo, ReservationWindow};
 pub use pb::*;
 
+pub use config::*;
 pub use utils::*;
 
 pub type ReservationId = i64;
