@@ -1700,9 +1700,11 @@ dependencies = [
  "abi",
  "anyhow",
  "futures",
+ "lazy_static",
  "reservation",
  "serde_yaml",
  "shellexpand",
+ "sqlx",
  "tokio",
  "tonic",
 ]
